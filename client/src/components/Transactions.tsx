@@ -82,7 +82,7 @@ type Props = {};
 
 const Transactions = (props: Props) => {
   // get current account
-  const { currentAccount }: any = useContext(TransactionContext);
+  const { currentAccount, transactions }: any = useContext(TransactionContext);
 
   return (
     <div className="flex w-full justify-center items-center exl:px-20 gradient-bg-transactions">
@@ -98,9 +98,16 @@ const Transactions = (props: Props) => {
         )}
 
         <div className="flex flex-wrap justify-center items-center">
-          {dummyData.reverse().map((transaction, i) => (
-            <TransactionsCard key={i} {...transaction} keyword="" />
-          ))}
+          {transactions
+            .reverse()
+            .map(
+              (
+                transaction: JSX.IntrinsicAttributes & TransactionsCardProps,
+                i: React.Key | null | undefined,
+              ) => (
+                <TransactionsCard key={i} {...transaction} />
+              ),
+            )}
         </div>
       </div>
     </div>

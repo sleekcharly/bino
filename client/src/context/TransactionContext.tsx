@@ -38,10 +38,39 @@ export const TransactionProvider = ({ children }: any) => {
   const [transactionCount, setTransactionCount] = useState(
     localStorage.getItem('transactionCount'),
   );
+  const [transactions, setTransactions] = useState([]);
 
   // handle form data change
   const handleChange = (e: { target: { value: any } }, name: any) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
+  };
+
+  // get all transactions
+  const getAllTransactions = async () => {
+    try {
+      if (!ethereum) return alert('Please install metamask');
+
+      const transactionContract = getEthereumContract();
+      const availableTransactions =
+        await transactionContract.getAllTransactions();
+
+      const structuredTransactions = availableTransactions.map(
+        (transaction: any) => ({
+          addressTo: transaction.receiver,
+          addressFrom: transaction.sender,
+          timestamp: new Date(
+            transaction.timestamp.toNumber() * 1000,
+          ).toLocaleString(),
+          message: transaction.message,
+          keyword: transaction.keyword,
+          amount: parseInt(transaction.amount._hex) / 10 ** 18,
+        }),
+      );
+
+      setTransactions(structuredTransactions);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // check if wallet is connected
@@ -55,6 +84,7 @@ export const TransactionProvider = ({ children }: any) => {
         setCurrentAccount(accounts[0]);
 
         // get all transactions
+        getAllTransactions();
       } else {
         console.log('No accounts found');
       }
@@ -62,6 +92,26 @@ export const TransactionProvider = ({ children }: any) => {
       console.log(error);
 
       throw new Error('No etherum object.');
+    }
+  };
+
+  // check if the wallet exists
+  const checkIfTransactionsExists = async () => {
+    try {
+      if (ethereum) {
+        const transactionContract = getEthereumContract();
+        const currentTransactionCount =
+          await transactionContract.getTransactionCount();
+
+        window.localStorage.setItem(
+          'transactionCount',
+          currentTransactionCount,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+
+      throw new Error('No ethereum object');
     }
   };
 
@@ -129,6 +179,8 @@ export const TransactionProvider = ({ children }: any) => {
       // get transaction count
       const transactionCount = await transactionsContract.getTransactionCount();
       setTransactionCount(transactionCount.toNumber());
+
+      window.location.reload();
     } catch (error) {
       console.log(error);
 
@@ -139,6 +191,7 @@ export const TransactionProvider = ({ children }: any) => {
   // run wallet check on application load
   useEffect(() => {
     checkIfWalletIsConnected();
+    checkIfTransactionsExists();
   }, []);
 
   return (
@@ -150,6 +203,8 @@ export const TransactionProvider = ({ children }: any) => {
         setFormData,
         handleChange,
         sendTransaction,
+        transactions,
+        isLoading,
       }}
     >
       {children}
