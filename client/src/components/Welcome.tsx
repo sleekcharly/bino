@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { AiFillPlayCircle } from 'react-icons/ai';
 import { SiEthereum } from 'react-icons/si';
 import { BsInfoCircle } from 'react-icons/bs';
-import { TransactionContext } from '../context/TransactionContext.jsx';
+import { TransactionContext } from '../context/TransactionContext.js';
 import { Loader } from './';
 
 const commonStyles =
@@ -43,7 +43,7 @@ const Welcome = (props: Props) => {
     formData,
     sendTransaction,
     handleChange,
-  } = useContext(TransactionContext);
+  }: any = useContext(TransactionContext);
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
     const { addressTo, amount, keyword, message } = formData;

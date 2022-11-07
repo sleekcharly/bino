@@ -4,10 +4,10 @@ import { ethers } from 'ethers';
 import { contractABI, contractAddress } from '../utils/constants';
 
 // setup react context
-export const TransactionContext = React.createContext();
+export const TransactionContext = React.createContext({});
 
 // destructure ethereum object from window
-const { ethereum } = window;
+const { ethereum }: any = window;
 
 // special function for retrieving etherum contract
 const getEthereumContract = () => {
@@ -25,7 +25,7 @@ const getEthereumContract = () => {
 };
 
 // create TransactionProvider
-export const TransactionProvider = ({ children }) => {
+export const TransactionProvider = ({ children }: any) => {
   // create application state
   const [currentAccount, setCurrentAccount] = useState('');
   const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ export const TransactionProvider = ({ children }) => {
   );
 
   // handle form data change
-  const handleChange = (e, name) => {
+  const handleChange = (e: { target: { value: any } }, name: any) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
